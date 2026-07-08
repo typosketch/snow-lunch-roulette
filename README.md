@@ -1,7 +1,7 @@
 
   # Random Restaurant Invitation Tool
 
-  This is a code bundle for Random Restaurant Invitation Tool.
+  This is a code bundle for Random Restaurant Invitation Tool. The original project is available at https://www.figma.com/design/OxNNjZXIzLiEjGqKvXNQhz/Random-Restaurant-Invitation-Tool.
 
   ## Running the code
 

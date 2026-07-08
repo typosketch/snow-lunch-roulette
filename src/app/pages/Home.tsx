@@ -95,24 +95,34 @@ function Card({ restaurant, scheme }: { restaurant: Restaurant; scheme: ColorSch
   );
 }
 
-function pickThree(): { restaurant: Restaurant; schemeIdx: number }[] {
-  const all = [...DEFAULT_RESTAURANTS, ...loadCustomRestaurants()];
-  const shuffled = all.sort(() => Math.random() - 0.5).slice(0, 3);
+function pickThree(all: Restaurant[]): { restaurant: Restaurant; schemeIdx: number }[] {
+  const shuffled = [...all].sort(() => Math.random() - 0.5).slice(0, 3);
   const schemeOrder = [0, 1, 2, 3].sort(() => Math.random() - 0.5);
   return shuffled.map((restaurant, i) => ({ restaurant, schemeIdx: schemeOrder[i] }));
 }
 
 export default function Home() {
+  const [allRestaurants, setAllRestaurants] = useState<Restaurant[]>(DEFAULT_RESTAURANTS);
   const [picks, setPicks] = useState<{ restaurant: Restaurant; schemeIdx: number }[]>([]);
   const [cardKey, setCardKey] = useState(0);
   const [spinning, setSpinning] = useState(false);
   const [copied, setCopied] = useState(false);
 
+  useEffect(() => {
+    let cancelled = false;
+    loadCustomRestaurants().then((custom) => {
+      if (!cancelled) setAllRestaurants([...DEFAULT_RESTAURANTS, ...custom]);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   function spin() {
     if (spinning) return;
     setSpinning(true);
     setTimeout(() => {
-      setPicks(pickThree());
+      setPicks(pickThree(allRestaurants));
       setCardKey((k) => k + 1);
       setSpinning(false);
     }, 350);
@@ -144,18 +154,23 @@ export default function Home() {
       <div className="w-full max-w-5xl">
         <AnimatePresence mode="wait">
           {picks.length > 0 && !spinning && (
-            <motion.div
-              key={cardKey}
-              className="grid grid-cols-1 sm:grid-cols-3 gap-6"
-              initial={{ opacity: 0, y: 24 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -16 }}
-              transition={{ duration: 0.35, ease: "easeOut" }}
-            >
-              {picks.map((pick, i) => (
-                <Card key={i} restaurant={pick.restaurant} scheme={SCHEMES[pick.schemeIdx]} />
-              ))}
-            </motion.div>
+            <div key={cardKey} className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+              {picks.map((pick, i) => {
+                // Middle card (i=1) animates first, then left (i=0), then right (i=2)
+                const delay = [0.14, 0, 0.28][i];
+                return (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, y: 32, scale: 0.96 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -16, scale: 0.97 }}
+                    transition={{ duration: 0.4, ease: "easeOut", delay }}
+                  >
+                    <Card restaurant={pick.restaurant} scheme={SCHEMES[pick.schemeIdx]} />
+                  </motion.div>
+                );
+              })}
+            </div>
           )}
         </AnimatePresence>
       </div>
@@ -193,7 +208,7 @@ export default function Home() {
       )}
 
       <p className="mt-8 text-xs text-[#B4906A] tracking-[0.38em] uppercase font-['Raleway']">
-        {DEFAULT_RESTAURANTS.length + loadCustomRestaurants().length} restaurants to discover
+        {allRestaurants.length} restaurants to discover
       </p>
     </div>
   );

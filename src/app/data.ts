@@ -1,3 +1,5 @@
+import { supabase } from "./supabaseClient";
+
 export type Category =
   | "mexican" | "breakfast" | "italian" | "pizza" | "bar" | "bbq"
   | "cafe" | "diner" | "deli" | "asian" | "sushi" | "burger"
@@ -87,26 +89,47 @@ export const DEFAULT_RESTAURANTS: Restaurant[] = [
   { name: "Maurizio's Italian Restaurante", category: "italian",   tagline: "Nonna's recipes, served with love" },
 ];
 
-const STORAGE_KEY = "snow-custom-restaurants";
+export async function loadCustomRestaurants(): Promise<Restaurant[]> {
+  const { data, error } = await supabase
+    .from("restaurants")
+    .select("name, category, tagline, menu_url")
+    .order("name", { ascending: true });
 
-export function loadCustomRestaurants(): Restaurant[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch {
+  if (error) {
+    console.error("Failed to load restaurants from Supabase:", error);
     return [];
+  }
+
+  return (data ?? []).map((row) => ({
+    name: row.name,
+    category: row.category as Category,
+    tagline: row.tagline,
+    menuUrl: row.menu_url ?? undefined,
+    custom: true,
+  }));
+}
+
+export async function saveCustomRestaurant(r: Restaurant): Promise<void> {
+  const { error } = await supabase.from("restaurants").insert({
+    name: r.name,
+    category: r.category,
+    tagline: r.tagline,
+    menu_url: r.menuUrl ?? null,
+  });
+
+  if (error) {
+    console.error("Failed to save restaurant to Supabase:", error);
+    throw error;
   }
 }
 
-export function saveCustomRestaurant(r: Restaurant): void {
-  const existing = loadCustomRestaurants();
-  existing.push({ ...r, custom: true });
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(existing));
-}
+export async function deleteCustomRestaurant(name: string): Promise<void> {
+  const { error } = await supabase.from("restaurants").delete().eq("name", name);
 
-export function deleteCustomRestaurant(name: string): void {
-  const existing = loadCustomRestaurants().filter((r) => r.name !== name);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(existing));
+  if (error) {
+    console.error("Failed to delete restaurant from Supabase:", error);
+    throw error;
+  }
 }
 
 export function photoUrl(category: Category): string {

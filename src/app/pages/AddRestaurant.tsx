@@ -27,7 +27,7 @@ export default function AddRestaurant() {
   const [custom, setCustom] = useState<Restaurant[]>([]);
 
   useEffect(() => {
-    setCustom(loadCustomRestaurants());
+    loadCustomRestaurants().then(setCustom);
   }, []);
 
   function validate() {
@@ -39,26 +39,30 @@ export default function AddRestaurant() {
     return e;
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     const errs = validate();
     if (Object.keys(errs).length) { setErrors(errs); return; }
-    saveCustomRestaurant({
-      name: form.name.trim(),
-      category: form.category,
-      tagline: form.tagline.trim() || `Great food at ${form.name.trim()}`,
-      menuUrl: form.menuUrl?.trim() || undefined,
-    });
-    setCustom(loadCustomRestaurants());
-    setForm({ ...EMPTY });
-    setErrors({});
-    setSubmitted(true);
-    setTimeout(() => setSubmitted(false), 2500);
+    try {
+      await saveCustomRestaurant({
+        name: form.name.trim(),
+        category: form.category,
+        tagline: form.tagline.trim() || `Great food at ${form.name.trim()}`,
+        menuUrl: form.menuUrl?.trim() || undefined,
+      });
+      setCustom(await loadCustomRestaurants());
+      setForm({ ...EMPTY });
+      setErrors({});
+      setSubmitted(true);
+      setTimeout(() => setSubmitted(false), 2500);
+    } catch {
+      setErrors({ name: "Couldn't save — please try again." });
+    }
   }
 
-  function handleDelete(name: string) {
-    deleteCustomRestaurant(name);
-    setCustom(loadCustomRestaurants());
+  async function handleDelete(name: string) {
+    await deleteCustomRestaurant(name);
+    setCustom(await loadCustomRestaurants());
   }
 
   function field(label: string, children: React.ReactNode, error?: string, hint?: string) {

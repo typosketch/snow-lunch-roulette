@@ -20,8 +20,6 @@ export default defineConfig({
   // GitHub Pages serves project sites from a subpath like
   // https://<username>.github.io/<repo-name>/ — this must match your repo name
   // exactly (with leading and trailing slashes) or assets will 404.
-  // If you're using a custom domain or a "username.github.io" root repo instead,
-  // change this back to '/'.
   base: '/snow-lunch-roulette/',
   plugins: [
     figmaAssetResolver(),

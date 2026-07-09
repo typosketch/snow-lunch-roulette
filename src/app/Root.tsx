@@ -38,15 +38,15 @@ export default function Root() {
   const grouped = groupByCategory(restaurants);
 
   return (
-    <div className="min-h-screen bg-[#F5F0E8] flex flex-col">
+    <div className="min-h-screen bg-[#0C0A14] flex flex-col">
 
       {/* Top nav */}
-      <nav className="w-full border-b border-[rgba(180,140,100,0.25)] bg-[#F5F0E8]/90 backdrop-blur-sm sticky top-0 z-50">
+      <nav className="w-full border-b border-[rgba(201,169,110,0.15)] bg-[#0C0A14]/95 backdrop-blur-sm sticky top-0 z-50">
         <div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <UtensilsCrossed className="w-4 h-4 text-[#C4622D]" />
-            <span className="font-['Playfair_Display'] font-bold text-[#2C1A0E] text-base">
-              Snow Lunch Roulette
+            <UtensilsCrossed className="w-4 h-4 text-[#C9A96E]" />
+            <span className="font-['Eczar'] font-bold text-[#EDE8DC] text-lg">
+              Oracle of Lunch
             </span>
           </div>
           <div className="flex items-center gap-1">
@@ -55,17 +55,17 @@ export default function Root() {
               end
               className={({ isActive }) =>
                 `text-xs font-semibold font-['Raleway'] uppercase tracking-widest px-3 py-1.5 transition-colors rounded-sm ${
-                  isActive ? "text-[#C4622D]" : "text-[#6B4C35] hover:text-[#C4622D]"
+                  isActive ? "text-[#C9A96E]" : "text-[#A89880] hover:text-[#C9A96E]"
                 }`
               }
             >
-              Roulette
+              Our Lunch Destiny
             </NavLink>
             <NavLink
               to="/add"
               className={({ isActive }) =>
                 `flex items-center gap-1.5 text-xs font-semibold font-['Raleway'] uppercase tracking-widest px-3 py-1.5 transition-colors rounded-sm ${
-                  isActive ? "text-[#C4622D]" : "text-[#6B4C35] hover:text-[#C4622D]"
+                  isActive ? "text-[#C9A96E]" : "text-[#A89880] hover:text-[#C9A96E]"
                 }`
               }
             >
@@ -74,7 +74,7 @@ export default function Root() {
             </NavLink>
             <button
               onClick={() => setPanelOpen(true)}
-              className="flex items-center gap-1.5 text-xs font-semibold font-['Raleway'] uppercase tracking-widest px-3 py-1.5 text-[#6B4C35] hover:text-[#C4622D] transition-colors rounded-sm"
+              className="flex items-center gap-1.5 text-xs font-semibold font-['Raleway'] uppercase tracking-widest px-3 py-1.5 text-[#A89880] hover:text-[#C9A96E] transition-colors rounded-sm"
             >
               <List className="w-3.5 h-3.5" />
               All Places
@@ -106,29 +106,29 @@ export default function Root() {
       <AnimatePresence>
         {panelOpen && (
           <motion.div
-            className="fixed top-0 right-0 h-full w-full max-w-sm bg-[#FEFAF3] shadow-2xl z-50 flex flex-col"
+            className="fixed top-0 right-0 h-full w-full max-w-sm bg-[#100E1C] shadow-2xl z-50 flex flex-col"
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", stiffness: 320, damping: 32 }}
           >
             {/* Panel header */}
-            <div className="flex items-center justify-between px-6 py-5 border-b border-[rgba(180,140,100,0.25)]">
+            <div className="flex items-center justify-between px-6 py-5 border-b border-[rgba(201,169,110,0.15)]">
               <div>
-                <p className="text-[10px] uppercase tracking-widest text-[#7A8C6E] font-['Raleway'] font-semibold mb-0.5">
+                <p className="text-[10px] uppercase tracking-widest text-[#7A8C8E] font-['Raleway'] font-semibold mb-0.5">
                   Full List
                 </p>
-                <h2 className="font-['Playfair_Display'] text-xl font-bold text-[#2C1A0E]">
+                <h2 className="font-['Eczar'] text-2xl font-bold text-[#EDE8DC]">
                   All Restaurants
                 </h2>
               </div>
               <div className="flex items-center gap-3">
-                <span className="text-xs text-[#B4906A] font-['Raleway']">
+                <span className="text-xs text-[#9A8E7E] font-['Raleway']">
                   {restaurants.length} places
                 </span>
                 <button
                   onClick={() => setPanelOpen(false)}
-                  className="text-[#B4906A] hover:text-[#2C1A0E] transition-colors p-1"
+                  className="text-[#9A8E7E] hover:text-[#EDE8DC] transition-colors p-1"
                   aria-label="Close panel"
                 >
                   <X className="w-5 h-5" />
@@ -140,20 +140,20 @@ export default function Root() {
             <div className="flex-1 overflow-y-auto px-6 py-4 space-y-6">
               {grouped.map(([category, items]) => (
                 <div key={category}>
-                  <p className="text-[10px] uppercase tracking-[0.3em] text-[#C4622D] font-semibold font-['Raleway'] mb-2">
+                  <p className="text-[10px] uppercase tracking-[0.3em] text-[#C9A96E] font-semibold font-['Raleway'] mb-2">
                     {CATEGORY_LABELS[category]}
                   </p>
                   <div className="space-y-1">
                     {items.map((r) => (
                       <div
                         key={r.name}
-                        className="flex items-start justify-between gap-2 py-2 border-b border-[rgba(180,140,100,0.15)] last:border-0"
+                        className="flex items-start justify-between gap-2 py-2 border-b border-[rgba(201,169,110,0.1)] last:border-0"
                       >
                         <div className="min-w-0">
-                          <p className="text-sm font-semibold font-['Raleway'] text-[#2C1A0E] leading-snug">
+                          <p className="text-sm font-semibold font-['Raleway'] text-[#EDE8DC] leading-snug">
                             {r.name}
                           </p>
-                          <p className="text-xs text-[#B4906A] font-['Raleway'] italic leading-snug mt-0.5">
+                          <p className="text-xs text-[#9A8E7E] font-['Raleway'] italic leading-snug mt-0.5">
                             {r.tagline}
                           </p>
                         </div>

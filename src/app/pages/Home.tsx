@@ -1,16 +1,18 @@
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "motion/react";
+import { motion } from "motion/react";
 import { ExternalLink, RefreshCw } from "lucide-react";
+import { ImageWithFallback } from "@/app/components/figma/ImageWithFallback";
+import cardBackSrc from "@/imports/tarotcard.png";
+import TarotIcon from "@/app/components/TarotIcon";
 import {
   type Restaurant,
-  type ColorScheme,
   CATEGORY_LABELS,
-  SCHEMES,
   DEFAULT_RESTAURANTS,
   loadCustomRestaurants,
-  photoUrl,
   menuHref,
 } from "../data";
+
+// ── Helpers ────────────────────────────────────────────────────────────────
 
 function buildTeamsText(picks: Restaurant[]): string {
   const lines: string[] = ["🍽️ Snow Creative Team Lunch — Where Should We Eat?\n"];
@@ -44,68 +46,176 @@ function copyText(text: string, onSuccess: () => void) {
   }
 }
 
-function Card({ restaurant, scheme }: { restaurant: Restaurant; scheme: ColorScheme }) {
+// ── Tarot card color schemes ───────────────────────────────────────────────
+
+interface TarotScheme {
+  bg: string;
+  accent: string;
+  text: string;
+  sub: string;
+  border: string;
+  divider: string;
+}
+
+const TAROT_SCHEMES: TarotScheme[] = [
+  { bg: "#08091A", accent: "#C9A96E", text: "#EDE8DC", sub: "rgba(237,232,220,0.75)", border: "rgba(201,169,110,0.35)", divider: "rgba(201,169,110,0.2)" },
+  { bg: "#0D0A1F", accent: "#9B7FD4", text: "#EAE6F5", sub: "rgba(234,230,245,0.75)", border: "rgba(155,127,212,0.35)", divider: "rgba(155,127,212,0.2)" },
+  { bg: "#100A0A", accent: "#C96E6E", text: "#F5E8E8", sub: "rgba(245,232,232,0.75)", border: "rgba(201,110,110,0.35)", divider: "rgba(201,110,110,0.2)" },
+  { bg: "#060F12", accent: "#5FBFB0", text: "#E4F3F1", sub: "rgba(228,243,241,0.75)", border: "rgba(95,191,176,0.35)", divider: "rgba(95,191,176,0.2)" },
+];
+
+const ROMAN = ["I", "II", "III"];
+
+// ── Tarot Card component ───────────────────────────────────────────────────
+
+function TarotCard({
+  restaurant,
+  scheme,
+  revealed,
+  cardIndex,
+}: {
+  restaurant: Restaurant;
+  scheme: TarotScheme;
+  revealed: boolean;
+  cardIndex: number;
+}) {
   const s = scheme;
+
   return (
     <div
-      className="relative w-full rounded-sm shadow-xl p-6 flex flex-col gap-4"
-      style={{ backgroundColor: s.bg }}
+      style={{ perspective: "1200px", aspectRatio: "5 / 8" }}
+      className="w-full"
     >
-      <div className="absolute inset-3 pointer-events-none" style={{ border: `1px solid ${s.outerBorder}` }} />
-      <div className="absolute inset-[13px] pointer-events-none" style={{ border: `1px solid ${s.innerBorder}` }} />
-      <div className="absolute top-3 left-3 w-5 h-5" style={{ borderTop: `2px solid ${s.corner}`, borderLeft: `2px solid ${s.corner}` }} />
-      <div className="absolute top-3 right-3 w-5 h-5" style={{ borderTop: `2px solid ${s.corner}`, borderRight: `2px solid ${s.corner}` }} />
-      <div className="absolute bottom-3 left-3 w-5 h-5" style={{ borderBottom: `2px solid ${s.corner}`, borderLeft: `2px solid ${s.corner}` }} />
-      <div className="absolute bottom-3 right-3 w-5 h-5" style={{ borderBottom: `2px solid ${s.corner}`, borderRight: `2px solid ${s.corner}` }} />
-
-      <div className="relative text-center pt-1">
-        <p className="text-sm uppercase tracking-[0.3em] font-semibold font-['Raleway']" style={{ color: s.labelTop }}>
-          {CATEGORY_LABELS[restaurant.category]}
-        </p>
-      </div>
-
-      <div
-        className="relative w-full overflow-hidden bg-stone-700"
-        style={{ height: "180px", flexShrink: 0, outline: `2px solid ${s.photoOutline}`, outlineOffset: "3px" }}
+      <motion.div
+        style={{
+          transformStyle: "preserve-3d",
+          width: "100%",
+          height: "100%",
+          position: "relative",
+        }}
+        animate={{ rotateY: revealed ? 180 : 0 }}
+        transition={{ duration: 0.8, ease: [0.4, 0, 0.2, 1] }}
       >
-        <img src={photoUrl(restaurant.category)} alt={restaurant.name} className="w-full h-full object-cover" loading="lazy" />
-        <div className="absolute inset-0" style={{ background: `linear-gradient(to bottom, transparent 50%, ${s.photoOverlay} 100%)` }} />
-      </div>
-
-      <div className="relative text-center flex flex-col items-center gap-3 pb-2">
-        <h2 className="font-['Playfair_Display'] text-2xl font-bold leading-tight" style={{ color: s.heading }}>
-          {restaurant.name}
-        </h2>
-        <p className="text-sm italic font-['Raleway']" style={{ color: s.tagline }}>
-          {restaurant.tagline}
-        </p>
-        <a
-          href={menuHref(restaurant)}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 text-sm font-semibold font-['Raleway'] tracking-widest uppercase px-5 py-2 transition-colors"
-          style={{ color: s.accentColor, border: `1px solid ${s.accentBorder}` }}
-          onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.backgroundColor = s.accentHoverBg; }}
-          onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.backgroundColor = "transparent"; }}
+        {/* ── Back face ── */}
+        <div
+          style={{
+            backfaceVisibility: "hidden",
+            WebkitBackfaceVisibility: "hidden",
+            position: "absolute",
+            inset: 0,
+            backgroundColor: "#000",
+            borderRadius: "8px",
+            border: "1px solid rgba(201,169,110,0.25)",
+            overflow: "hidden",
+          }}
         >
-          View Menu <ExternalLink className="w-3.5 h-3.5" />
-        </a>
-      </div>
+          <ImageWithFallback
+            src={cardBackSrc}
+            alt="Card back"
+            className="w-full h-full object-contain"
+          />
+        </div>
+
+        {/* ── Front face ── */}
+        <div
+          style={{
+            backfaceVisibility: "hidden",
+            WebkitBackfaceVisibility: "hidden",
+            transform: "rotateY(180deg)",
+            position: "absolute",
+            inset: 0,
+            backgroundColor: s.bg,
+            borderRadius: "8px",
+            border: `1px solid ${s.border}`,
+            overflow: "hidden",
+          }}
+          className="flex flex-col p-5"
+        >
+          {/* Top: roman numeral + category */}
+          <div className="flex items-start justify-between mb-4">
+            <span
+              className="font-['Eczar'] font-semibold text-3xl leading-none"
+              style={{ color: s.accent }}
+            >
+              {ROMAN[cardIndex]}
+            </span>
+            <span
+              className="font-['Raleway'] text-[10px] font-semibold uppercase tracking-[0.22em] text-right leading-tight"
+              style={{ color: s.sub, maxWidth: "58%" }}
+            >
+              {CATEGORY_LABELS[restaurant.category]}
+            </span>
+          </div>
+
+          {/* Center: restaurant name */}
+          <div className="flex-1 flex items-center justify-center">
+            <h2
+              className="font-['Eczar'] font-semibold text-center leading-none w-full"
+              style={{
+                color: s.text,
+                fontSize: "clamp(1.35rem, 7.5cqw, 2.4rem)",
+                letterSpacing: "-0.01em",
+                wordBreak: "break-word",
+                hyphens: "auto",
+              }}
+            >
+              {restaurant.name}
+            </h2>
+          </div>
+
+          {/* Divider */}
+          <div className="my-4" style={{ height: "1px", backgroundColor: s.divider }} />
+
+          {/* Bottom: tagline + menu link */}
+          <div className="flex flex-col items-center gap-3">
+            <p
+              className="font-['Raleway'] text-xs italic text-center leading-snug"
+              style={{ color: s.sub }}
+            >
+              {restaurant.tagline}
+            </p>
+            <a
+              href={menuHref(restaurant)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 font-['Raleway'] text-xs font-semibold uppercase tracking-widest px-4 py-2 transition-colors"
+              style={{ color: s.accent, border: `1px solid ${s.border}` }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.backgroundColor = `${s.accent}22`; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.backgroundColor = "transparent"; }}
+            >
+              View Menu <ExternalLink className="w-3 h-3" />
+            </a>
+          </div>
+        </div>
+      </motion.div>
     </div>
   );
 }
 
-function pickThree(all: Restaurant[]): { restaurant: Restaurant; schemeIdx: number }[] {
+// ── Data helpers ───────────────────────────────────────────────────────────
+
+interface Pick { restaurant: Restaurant; schemeIdx: number; }
+
+function pickThree(all: Restaurant[]): Pick[] {
   const shuffled = [...all].sort(() => Math.random() - 0.5).slice(0, 3);
   const schemeOrder = [0, 1, 2, 3].sort(() => Math.random() - 0.5);
   return shuffled.map((restaurant, i) => ({ restaurant, schemeIdx: schemeOrder[i] }));
 }
 
+// ── Page ───────────────────────────────────────────────────────────────────
+
+type Phase = "idle" | "active" | "revealed";
+
 export default function Home() {
   const [allRestaurants, setAllRestaurants] = useState<Restaurant[]>(DEFAULT_RESTAURANTS);
-  const [picks, setPicks] = useState<{ restaurant: Restaurant; schemeIdx: number }[]>([]);
-  const [cardKey, setCardKey] = useState(0);
-  const [spinning, setSpinning] = useState(false);
+  // Cards are initialized on mount so backs are visible before any interaction.
+  // Uses defaults only — custom restaurants load in just after and are picked up
+  // by the next spin via allRestaurants.
+  const [picks, setPicks] = useState<Pick[]>(() => pickThree(DEFAULT_RESTAURANTS));
+  const [cardSetKey, setCardSetKey] = useState(0);
+  const [phase, setPhase] = useState<Phase>("idle");
+  const [revealed, setRevealed] = useState([false, false, false]);
+  const [flipKey, setFlipKey] = useState(0);
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
@@ -118,65 +228,87 @@ export default function Home() {
     };
   }, []);
 
+  // Auto-flip sequence triggered by flipKey increment
+  // Order: middle (i=1) → left (i=0) → right (i=2)
+  useEffect(() => {
+    if (flipKey === 0) return;
+    const timers = [
+      setTimeout(() => setRevealed(r => { const n = [...r]; n[1] = true; return n; }), 700),
+      setTimeout(() => setRevealed(r => { const n = [...r]; n[0] = true; return n; }), 1250),
+      setTimeout(() => setRevealed(r => { const n = [...r]; n[2] = true; return n; }), 1800),
+      setTimeout(() => setPhase("revealed"), 2700),
+    ];
+    return () => timers.forEach(clearTimeout);
+  }, [flipKey]);
+
   function spin() {
-    if (spinning) return;
-    setSpinning(true);
-    setTimeout(() => {
-      setPicks(pickThree(allRestaurants));
-      setCardKey((k) => k + 1);
-      setSpinning(false);
-    }, 350);
+    if (phase === "idle") {
+      // Cards already visible face-down — just flip them
+      setPhase("active");
+      setFlipKey(k => k + 1);
+    } else {
+      // Flip current cards back, then swap in new picks and flip forward
+      setRevealed([false, false, false]);
+      setPhase("active");
+      setTimeout(() => {
+        setPicks(pickThree(allRestaurants));
+        setCardSetKey(k => k + 1);
+        setFlipKey(k => k + 1);
+      }, 900);
+    }
   }
 
+  const totalRestaurants = allRestaurants.length;
+
   return (
-    <div className="flex flex-col items-center px-4 py-16">
+    <div className="flex flex-col items-center px-4 py-16 bg-[#0C0A14] min-h-screen">
+
+      {/* Header */}
       <div className="text-center mb-12">
-        <p className="text-xs uppercase tracking-[0.45em] text-[#7A8C6E] mb-2 font-['Raleway'] font-semibold">
+        <TarotIcon className="w-24 h-auto mx-auto mb-5 opacity-75" fill="#C9A96E" />
+        <p className="text-xs uppercase tracking-[0.45em] text-[#7A8C8E] mb-2 font-['Raleway'] font-semibold">
           Snow Creative Team Lunch
         </p>
-        <h1 className="font-['Playfair_Display'] text-5xl md:text-6xl font-bold text-[#2C1A0E] mb-4 leading-tight">
-          Where Should We Eat?
+        <h1 className="font-['Eczar'] text-5xl md:text-6xl font-bold text-[#EDE8DC] mb-4 leading-tight">
+          Let the Cards Decide
         </h1>
-        <p className="text-base text-[#6B4C35] max-w-sm mx-auto leading-relaxed font-['Raleway']">
-          Can't decide where to eat? Let fate choose your next dining adventure.
+        <p className="text-base text-[#A89880] max-w-sm mx-auto leading-relaxed font-['Raleway']">
+          Shuffle, flip, and find out where lunch takes us.
         </p>
       </div>
 
+      {/* Spin button */}
       <button
         onClick={spin}
-        disabled={spinning}
-        className="flex items-center gap-3 bg-[#C4622D] hover:bg-[#A04E24] disabled:opacity-50 disabled:cursor-not-allowed text-white px-10 py-4 text-base font-semibold font-['Raleway'] tracking-widest uppercase transition-all mb-14 rounded-sm shadow-lg hover:shadow-xl active:scale-95"
+        className="flex items-center gap-3 bg-[#C9A96E] hover:bg-[#B8965A] text-[#08091A] px-10 py-4 text-base font-semibold font-['Raleway'] tracking-widest uppercase transition-all mb-14 rounded-sm shadow-lg hover:shadow-xl active:scale-95"
       >
-        <RefreshCw className={`w-5 h-5 ${spinning ? "animate-spin" : ""}`} />
-        {picks.length > 0 ? "Spin Again" : "Pick Restaurants"}
+        <RefreshCw className="w-5 h-5" />
+        Let Fate Decide
       </button>
 
-      <div className="w-full max-w-5xl">
-        <AnimatePresence mode="wait">
-          {picks.length > 0 && !spinning && (
-            <div key={cardKey} className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-              {picks.map((pick, i) => {
-                // Middle card (i=1) animates first, then left (i=0), then right (i=2)
-                const delay = [0.14, 0, 0.28][i];
-                return (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, y: 32, scale: 0.96 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: -16, scale: 0.97 }}
-                    transition={{ duration: 0.4, ease: "easeOut", delay }}
-                  >
-                    <Card restaurant={pick.restaurant} scheme={SCHEMES[pick.schemeIdx]} />
-                  </motion.div>
-                );
-              })}
-            </div>
-          )}
-        </AnimatePresence>
+      {/* Cards — always rendered since picks initialize on mount */}
+      <div className="w-full max-w-3xl" style={{ containerType: "inline-size" }}>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          {picks.map((pick, i) => (
+            <TarotCard
+              key={`${cardSetKey}-${i}`}
+                restaurant={pick.restaurant}
+                scheme={TAROT_SCHEMES[pick.schemeIdx]}
+                revealed={revealed[i]}
+                cardIndex={i}
+              />
+          ))}
+        </div>
       </div>
 
-      {picks.length > 0 && !spinning && (
-        <div className="mt-8 flex flex-col items-center gap-2">
+      {/* Post-reveal actions */}
+      {phase === "revealed" && (
+        <motion.div
+          className="mt-10 flex flex-col items-center gap-3"
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.35, ease: "easeOut" }}
+        >
           <button
             onClick={() =>
               copyText(buildTeamsText(picks.map((p) => p.restaurant)), () => {
@@ -184,7 +316,7 @@ export default function Home() {
                 setTimeout(() => setCopied(false), 2200);
               })
             }
-            className="flex items-center gap-2 border border-[#C4622D]/40 text-[#C4622D] hover:bg-[#C4622D]/5 px-6 py-2.5 text-sm font-semibold font-['Raleway'] tracking-wider uppercase transition-all rounded-sm"
+            className="flex items-center gap-2 border border-[#C9A96E]/40 text-[#C9A96E] hover:bg-[#C9A96E]/10 px-6 py-2.5 text-sm font-semibold font-['Raleway'] tracking-wider uppercase transition-all rounded-sm"
           >
             {copied ? (
               <>
@@ -203,12 +335,12 @@ export default function Home() {
               </>
             )}
           </button>
-          <p className="text-xs text-[#B4906A] font-['Raleway']">Paste directly into a Teams chat</p>
-        </div>
+          <p className="text-xs text-[#9A8E7E] font-['Raleway']">Paste directly into a Teams chat</p>
+        </motion.div>
       )}
 
-      <p className="mt-8 text-xs text-[#B4906A] tracking-[0.38em] uppercase font-['Raleway']">
-        {allRestaurants.length} restaurants to discover
+      <p className="mt-10 text-xs text-[#8A7E6E] tracking-[0.38em] uppercase font-['Raleway']">
+        {totalRestaurants} restaurants to discover
       </p>
     </div>
   );

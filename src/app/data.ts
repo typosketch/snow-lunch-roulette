@@ -69,7 +69,7 @@ export const DEFAULT_RESTAURANTS: Restaurant[] = [
   { name: "Precarious",                     category: "bar",       tagline: "Craft cocktails & clever bites" },
   { name: "First Watch",                    category: "breakfast", tagline: "Daytime dining at its finest" },
   { name: "Maria Bonita",                   category: "mexican",   tagline: "Authentic south-of-the-border fare" },
-  { name: "Ichiban",                        category: "asian",     tagline: "Japanese tradition on every plate" },
+  { name: "Ichiban",                        category: "sushi",     tagline: "Japanese tradition on every plate" },
   { name: "Craft 31",                       category: "bar",       tagline: "Local brews & handcrafted food" },
   { name: "K'Bola Cuban",                   category: "cuban",     tagline: "Bold Caribbean flavors" },
   { name: "Bangkok Garden",                 category: "asian",     tagline: "Thai spice, pure delight" },

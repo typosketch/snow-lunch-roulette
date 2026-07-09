@@ -273,7 +273,7 @@ export default function Home() {
           Let the Cards Decide
         </h1>
         <p className="text-base text-[#A89880] max-w-sm mx-auto leading-relaxed font-['Raleway']">
-          Shuffle, flip, and find out where lunch takes us.
+         Close your eyes, trust the cards, and let destiny guide your fork.
         </p>
       </div>
 

@@ -46,7 +46,7 @@ export const DEFAULT_RESTAURANTS: Restaurant[] = [
   { name: "Another Broken Egg",             category: "breakfast", tagline: "Morning indulgence, done right" },
   { name: "Sals",                           category: "italian",   tagline: "Old-world Italian comfort" },
   { name: "La Terraza",                     category: "mexican",   tagline: "Fresh flavors, lively atmosphere" },
-  { name: "Cheese Shop",                    category: "deli",      tagline: "A Williamsburg institution since 1955" },
+  { name: "Cheese Shop",                    category: "deli",      tagline: "Insanely overpriced sandwiches with an outdoor view" },
   { name: "Mellow Mushroom",                category: "pizza",     tagline: "Far-out pies & good vibes" },
   { name: "Dog Street Pub",                 category: "bar",       tagline: "Colonial charm, cold pints" },
   { name: "Old City BBQ",                   category: "bbq",       tagline: "Low & slow, worth every bite" },

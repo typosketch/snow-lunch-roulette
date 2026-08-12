@@ -17,7 +17,7 @@ function groupByCategory(restaurants: Restaurant[]): [Category, Restaurant[]][] 
     map.get(r.category)!.push(r);
   }
   return Array.from(map.entries()).sort(([a], [b]) =>
-    CATEGORY_LABELS[a].localeCompare(CATEGORY_LABELS[b])
+    (CATEGORY_LABELS[a] ?? a).localeCompare(CATEGORY_LABELS[b] ?? b)
   );
 }
 
@@ -141,7 +141,7 @@ export default function Root() {
               {grouped.map(([category, items]) => (
                 <div key={category}>
                   <p className="text-[10px] uppercase tracking-[0.3em] text-[#C9A96E] font-semibold font-['Raleway'] mb-2">
-                    {CATEGORY_LABELS[category]}
+                    {CATEGORY_LABELS[category] ?? category}
                   </p>
                   <div className="space-y-1">
                     {items.map((r) => (

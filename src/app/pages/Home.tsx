@@ -17,7 +17,7 @@ import {
 function buildTeamsText(picks: Restaurant[]): string {
   const lines: string[] = ["🍽️ Snow Creative Team Lunch — Where Should We Eat?\n"];
   picks.forEach((r, i) => {
-    lines.push(`${i + 1}. ${r.name} — ${CATEGORY_LABELS[r.category]}`);
+    lines.push(`${i + 1}. ${r.name} — ${CATEGORY_LABELS[r.category] ?? r.category}`);
     lines.push(`   ${r.tagline}`);
     lines.push(`   Menu: ${menuHref(r)}`);
     if (i < picks.length - 1) lines.push("");
@@ -143,7 +143,7 @@ function TarotCard({
               className="font-['Raleway'] text-[10px] font-semibold uppercase tracking-[0.22em] text-right leading-tight"
               style={{ color: s.sub, maxWidth: "58%" }}
             >
-              {CATEGORY_LABELS[restaurant.category]}
+              {CATEGORY_LABELS[restaurant.category] ?? restaurant.category}
             </span>
           </div>
 

@@ -210,7 +210,7 @@ export default function AddRestaurant() {
                 >
                   <div>
                     <p className="text-sm font-semibold font-['Raleway'] text-[#EDE8DC]">{r.name}</p>
-                    <p className="text-xs text-[#9A8E7E] font-['Raleway']">{CATEGORY_LABELS[r.category]}</p>
+                    <p className="text-xs text-[#9A8E7E] font-['Raleway']">{CATEGORY_LABELS[r.category] ?? r.category}</p>
                   </div>
                   <button
                     onClick={() => handleDelete(r.name)}

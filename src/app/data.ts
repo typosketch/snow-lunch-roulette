@@ -69,7 +69,6 @@ export const DEFAULT_RESTAURANTS: Restaurant[] = [
   { name: "Cook's Burger Bar",              category: "burger",    tagline: "Hand-smashed, flame-kissed perfection" },
   { name: "Burgers On The Edge",            category: "burger",    tagline: "Living on the delicious edge" },
   { name: "Amiraj",                         category: "indian",    tagline: "Rich spices, royal heritage" },
-  { name: "The Brunch Company",             category: "breakfast", tagline: "Brunch is always a good idea" },
   { name: "Second Street Bistro",           category: "american",  tagline: "Neighborhood bistro, big flavors" },
   { name: "Le Yaca",                        category: "french",    tagline: "Classic French, beautifully prepared" },
   { name: "Spice Palace Indian",            category: "indian",    tagline: "Aromatic curries & tandoor specialties" },

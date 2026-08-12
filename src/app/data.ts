@@ -1,9 +1,10 @@
 import { supabase } from "./supabaseClient";
 
 export type Category =
-  | "mexican" | "breakfast" | "italian" | "pizza" | "bar" | "bbq"
-  | "cafe" | "diner" | "deli" | "asian" | "sushi" | "burger"
-  | "cuban" | "indian" | "french" | "bistro" | "other";
+  | "mexican" | "greek" | "breakfast" | "italian" | "pizza" | "bar" | "bbq"
+  | "cafe" | "diner" | "deli" | "thai" | "ramen" | "asian" | "sushi" | "burger"
+  | "cuban" | "indian" | "french" | "bistro" | "brew" | "steak"
+  | "sandwiches" | "american" | "other";
 
 export interface Restaurant {
   name: string;
@@ -34,6 +35,8 @@ export const CATEGORY_LABELS: Record<Category, string> = {
   bistro:    "Bistro",
   brew:      "Beer Bar",
   steak:     "Steak",
+  sandwiches: "Sandwiches",
+  american:  "American",
   other:     "Restaurant",
 };
 
@@ -114,10 +117,6 @@ export async function deleteCustomRestaurant(name: string): Promise<void> {
     console.error("Failed to delete restaurant from Supabase:", error);
     throw error;
   }
-}
-
-export function photoUrl(category: Category): string {
-  return `https://images.unsplash.com/${PHOTO_IDS[category]}?w=600&h=400&fit=crop&auto=format`;
 }
 
 export function menuHref(r: Restaurant): string {
